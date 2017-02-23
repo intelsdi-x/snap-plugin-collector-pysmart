@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "schedule": {
+        "type": "simple",
+        "interval": "1s"
+    },
+    "workflow": {
+        "collect": {
+            "metrics": {
+                "/intel/smartmon/devices/*/*/threshold": {},
+                "/intel/smartmon/devices/*/*/value": {}
+            }
+        }
+    }
+}
