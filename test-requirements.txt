@@ -2,5 +2,6 @@
 # of appearance. Changing the order has an impact on the overall integration
 # process, which may cause wedges in the gate later.
 
-pySMART.smartx>=0.3.6
-git+git://github.com/intelsdi-x/snap-plugin-lib-py
+pytest>=3.0.3
+pytest-cov>=2.4.0
+tox>=2.4.1
