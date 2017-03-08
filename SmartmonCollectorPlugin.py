@@ -31,7 +31,7 @@ class Smartmon(snap.Collector):
         LOG.debug("GetMetricTypes called")
         metrics = []
         # adds namespace elements (static and dynamic) via namespace methods
-        for i in ("threshold", "value"):
+        for i in ("threshold", "value", "whenfailed", "worst", "type", "updated", "raw", "num"):
             metric = snap.Metric(version=1, Description="SMARTMON list of "
                                  + "dynamic devices and attributes")
             metric.namespace.add_static_element("intel")
@@ -52,13 +52,13 @@ class Smartmon(snap.Collector):
     def collect(self, metrics):
         metricsToReturn = []
         # devices on the system for which S.M.A.R.T. is enabled
-        devices = DeviceList()
+        devs = DeviceList()
         # set the time before the loop in case the time changes as the metric
         # values are being set
         ts_now = time.time()
         # loop through each device and each attribute on the device and store
         # the value to metric
-        for dev in devices.devices:
+        for dev in devs.devices:
             # dev.attributes is the list of S.M.A.R.T. attributes avaible on
             # each device, may change depending on the devide
             for att in dev.attributes:
@@ -80,6 +80,18 @@ class Smartmon(snap.Collector):
                             _metrics.data = att.thresh
                         if _metrics.namespace[5].value == "value":
                             _metrics.data = att.value
+                        if _metrics.namespace[5].value == "whenfailed":
+                            _metrics.data = att.when_failed
+                        if _metrics.namespace[5].value == "worst":
+                            _metrics.data = att.worst
+                        if _metrics.namespace[5].value == "type":
+                            _metrics.data = att.type
+                        if _metrics.namespace[5].value == "updated":
+                            _metrics.data = att.updated
+                        if _metrics.namespace[5].value == "raw":
+                            _metrics.data = att.raw
+                        if _metrics.namespace[5].value == "num":
+                            _metrics.data = att.num
                         # store the time stamp for each metric
                         _metrics.timestamp = ts_now
                         metricsToReturn.append(_metrics)
