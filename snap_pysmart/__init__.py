@@ -2,7 +2,7 @@
 
 # http://www.apache.org/licenses/LICENSE-2.0.txt
 #
-# Copyright 2016 Intel Corporation
+# Copyright 2017 Intel Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,25 +15,46 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
- 
+
 import logging
 import time
+import sys
+
 from pySMART import DeviceList
 
 import snap_plugin.v1 as snap
+from shutilwhich import which
 
 LOG = logging.getLogger(__name__)
 
 
 class Smartmon(snap.Collector):
 
+    def __init__(self, *args, **kwargs):
+        super(Smartmon, self).__init__(*args)
+        if "DeviceList" in kwargs:
+            self.devices = kwargs.get("DeviceList")().devices
+        else:
+            if which("smartctl") is None:
+                sys.exit("smartctl needs to be installed")
+            self.devices = []
+            for device in DeviceList().devices:
+                if not device.supports_smart:
+                    LOG.warning("Skipping %s.  SMART is not enabled.", device.path)
+                else:
+                    self.devices.append(device)
+            if len(self.devices) == 0:
+                sys.exit("No devices detected.  Check permissions.  Hint run: 'smartctl --scan'")
+
     def update_catalog(self, config):
         LOG.debug("GetMetricTypes called")
         metrics = []
         # adds namespace elements (static and dynamic) via namespace methods
-        for i in ("threshold", "value", "whenfailed", "worst", "type", "updated", "raw", "num"):
-            metric = snap.Metric(version=1, Description="SMARTMON list of "
-                                 + "dynamic devices and attributes")
+        for i in ("threshold", "value", "whenfailed", "worst", "type",
+                  "updated", "raw", "num"):
+            metric = snap.Metric(version=1,
+                                 Description="SMARTMON list of dynamic devices"
+                                 " and attributes")
             metric.namespace.add_static_element("intel")
             metric.namespace.add_static_element("smartmon")
             metric.namespace.add_static_element("devices")
@@ -51,14 +72,12 @@ class Smartmon(snap.Collector):
 
     def collect(self, metrics):
         metricsToReturn = []
-        # devices on the system for which S.M.A.R.T. is enabled
-        devs = DeviceList()
         # set the time before the loop in case the time changes as the metric
         # values are being set
         ts_now = time.time()
         # loop through each device and each attribute on the device and store
         # the value to metric
-        for dev in devs.devices:
+        for dev in self.devices:
             # dev.attributes is the list of S.M.A.R.T. attributes avaible on
             # each device, may change depending on the devide
             for att in dev.attributes:
@@ -99,3 +118,7 @@ class Smartmon(snap.Collector):
 
 if __name__ == "__main__":
     Smartmon("SmartmonCollectorPlugin-py", 1).start_plugin()
+
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions

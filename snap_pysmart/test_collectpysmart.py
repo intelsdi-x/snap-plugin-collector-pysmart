@@ -17,32 +17,43 @@
 # limitations under the License.
 
 import unittest
-import commands
+
 import pytest
-from mock import Mock, patch
+from mock import MagicMock, Mock
+
 import snap_plugin.v1 as snap
-from SmartmonCollectorPlugin import Smartmon
+from shutilwhich import which
+from . import Smartmon
+
 
 class SmartTestCase(unittest.TestCase):
 
-    #tests if smartctl is installed, report and exit if it is not
-    exist = commands.getstatusoutput("smartctl --scan")
-    if "command not found" in exist[1]:
-        pytest.xfail('smartctl not installed\n')
+    # mock the DeviceList attribute in
+    def test_smartpy(self):
 
-    # mock the DeviceList attribute in pySMART
-    @patch('pySMART.DeviceList')
-    def test_smartpy(self, mock_dev):
-        mock_dev.devices = []
-        #create device names and attributes to iterate through
-        for deviter in ["/dev/sda", "/dev/sdb"]:
-            mock_dev.devices.append(
-                Mock(
-                    name=deviter,
-                    attributes=Mock(
-                        name="asdf", thresh=5, value=7, raw=123, type='Old_age', updated='Always', worst='10', num='2', when_failed='-')))
-        plugin = Smartmon("smart", 1)
-        #set the two metrics for value and threshold
+        # setup mocks
+        att = Mock()
+        att.name = "some-attribute"
+        att.value = 5
+        att.thresh = 5
+        att.raw = 123
+        att.type = "old_age"
+        att.updated = "always"
+        att.worst = "2"
+        att.num = "7"
+        att.when_failed = "-"
+        device = MagicMock()
+        device.name = "/dev/sda"
+        device.attributes.__iter__.return_value = [att]
+        mock_devices = MagicMock()
+        mock_devices.devices.__iter__.return_value = iter([device])
+        mock_devlist = Mock()
+        mock_devlist.return_value = mock_devices
+
+        assert not mock_devlist.called
+        plugin = Smartmon("smart", 1, DeviceList=mock_devlist)
+        assert mock_devlist.called
+        # set the two metrics for value and threshold
         metrics = plugin.collect([
             snap.Metric(
                 namespace=[

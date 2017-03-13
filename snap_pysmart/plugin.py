@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python
+
 # http://www.apache.org/licenses/LICENSE-2.0.txt
 #
 # Copyright 2017 Intel Corporation
@@ -15,16 +16,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
+from snap_pysmart import Smartmon, __version__
+import re
 
+def run():
+    Smartmon("SmartmonCollectorPlugin-py", re.search('\d+|$', __version__).group()).start_plugin()
 
-def test_collect():
-    assert True
-
-
-def test_update_catalog():
-    assert True
-
-
-def test_get_config_policy():
-    assert True
+if __name__ == "__main__":
+    run()
