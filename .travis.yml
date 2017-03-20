@@ -18,7 +18,7 @@ deploy:
   upload-dir: plugins
   acl: public_read
   on:
-    repo: jcooklin/snap-plugin-collector-pysmart
+    repo: intelsdi-x/snap-plugin-collector-pysmart
     tags: true
 - provider: pypi
   distributions: sdist bdist_wheel
@@ -27,4 +27,4 @@ deploy:
   password: $PYPI_PASSWORD
   on:
     tags: true
-    repo: jcooklin/snap-plugin-collector-pysmart
+    repo: intelsdi-x/snap-plugin-collector-pysmart
