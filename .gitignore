@@ -15,6 +15,7 @@ develop-eggs
 lib
 lib64
 *.aci
+.acbuild
 
 # Installer logs
 pip-log.txt
@@ -26,7 +27,7 @@ cover/
 .tox
 nosetests.xml
 .testrepository
-.venv
+.venv*
 .cache
 
 # Developer

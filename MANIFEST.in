@@ -1,0 +1,2 @@
+include versioneer.py
+include snap_pysmart/_version.py

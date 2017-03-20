@@ -14,16 +14,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from setuptools import setup, find_packages
+import versioneer
 
 setup(
     name="snap-plugin-collector-pysmart",
-    version="1.0.0",
-    packages=find_packages(),
-    install_requires=['grpcio>=1.0.0,<2', 'protobuf>=3.1.0,<4',
-                      'futures>=3.0.5', 'future>=0.16.0'],
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
+    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    install_requires=['snap-plugin-lib-py>=1.0.10,<2'],
     description="This is a Snap collector plugin providing storage related "
     + "metrics through smartmontools.",
+    entry_points = {
+        'console_scripts': [
+            'snap-plugin-collector-pysmart=snap_pysmart.plugin:run'
+        ]
+    },
     license="Apache 2.0",
     keywords="snap telemetry plugin plugins metrics smartmon smartmontools",
     url="http://github.com/intelsdi-x/snap-plugin-collector-pysmart"
