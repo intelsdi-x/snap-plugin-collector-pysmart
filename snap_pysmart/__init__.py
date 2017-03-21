@@ -115,7 +115,3 @@ class Smartmon(snap.Collector):
                         _metrics.timestamp = ts_now
                         metricsToReturn.append(_metrics)
         return metricsToReturn
-
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
