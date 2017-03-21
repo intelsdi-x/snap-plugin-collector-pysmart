@@ -22,7 +22,7 @@ deploy:
     tags: true
 - provider: pypi
   distributions: sdist bdist_wheel
-  server: https://testpypi.python.org/pypi
+  server: https://pypi.python.org/pypi
   user: $PYPI_USER
   password: $PYPI_PASSWORD
   on:
