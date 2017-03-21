@@ -1,5 +1,5 @@
 # Snap collector plugin - Smartmon in python
-This plugin collects metrics from the Self-Monitoring, Analysis and Reporting Technology (S.M.A.R.T.) leveraging the pySMART library. The purpose of S.M.A.R.T. is to monitor the reliability of the hard drive and predict drive failures, and to carry out different types of drive self-tests
+This Snap plugin collects metrics from the Self-Monitoring, Analysis and Reporting Technology (S.M.A.R.T.) leveraging the pySMART library. The purpose of S.M.A.R.T. is to monitor the reliability of the hard drive and predict drive failures, and to carry out different types of drive self-tests.
 
 It's used in the [Snap framework](http://github.com:intelsdi-x/snap).
 
@@ -83,24 +83,69 @@ This is an example running psutil and writing data to a file. It is assumed that
 
 The example is run from a directory which includes snaptel, snapteld, along with the plugins and task file.
 
-In one terminal window, open the Snap daemon (in this case with logging set to 1 and trust disabled):
+In one terminal window, open the Snap daemon:
 ```
 $ snapteld -l 1 -t 0
 ```
+The option "-l 1" is for setting the debugging log level and "-t 0" is for disabling plugin signing.
 
 In another terminal window:
 Load pysmart plugin
 ```
-$ snaptel plugin load SmartmonCollectorPlugin.py
+$ snaptel plugin load snap_pysmart/plugin.py
 ```
 See available metrics for your system. *Note* The * in the metric list name indicates a dynamic metric which will update depending on the device names and attribute names
 ```
 $ snaptel metric list
 ```
+
+Create a task file. For example, task-smart.json:
+
+Creating a task manifest file. 
+```
+{
+    "version": 1,
+    "schedule": {
+        "type": "simple",
+        "interval": "1s"
+    },
+    "workflow": {
+        "collect": {
+            "metrics": {
+                "/intel/smartmon/devices/*/*/threshold": {},
+                "/intel/smartmon/devices/*/*/value": {},
+                "/intel/smartmon/devices/*/*/whenfailed": {},
+                "/intel/smartmon/devices/*/*/worst": {},
+                "/intel/smartmon/devices/*/*/type": {},
+                "/intel/smartmon/devices/*/*/updated": {},
+                "/intel/smartmon/devices/*/*/raw": {},
+                "/intel/smartmon/devices/*/*/num": {}
+            },
+            "publish": [
+                {
+                    "plugin_name": "file",
+                    "config": {
+                        "file": "/tmp/published_pysmart"
+                    }
+                }
+            ]
+        }
+    }
+}
+```
+
 Load the task manifest [file](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/blob/master/task-smart.json) 
+
+Start task:
 ```
 $ snaptel task create -t task-smart.json
+Using task manifest to create task
+Task created
+ID: c6d095a6-733d-40cf-a986-9c82aa64b4e2
+Name: Task-c6d095a6-733d-40cf-a986-9c82aa64b4e2
+State: Running
 ```
+
 See the pysmart plugin task
 ```
 $ snaptel task list
@@ -144,6 +189,7 @@ There's more than one way to give back, from examples to blogs to code updates. 
 [Snap](http://github.com:intelsdi-x/snap), along with this plugin, is an Open Source software released under the Apache 2.0 [License](LICENSE).
 
 ## Acknowledgements
-* Author: [@saalt](https://github.com/saalt/)
+* Authors: [Samantha Alt](https://github.com/saalt),
+           [Joel Cooklin](https://github.com/jcooklin)
 
 And **thank you!** Your contribution, through code and participation, is incredibly important to us.
