@@ -1,0 +1,30 @@
+language: python
+sudo: false
+dist: trusty
+python:
+- '2.7'
+install: pip install tox-travis
+script: tox
+before_deploy:
+- "./scripts/create_pkg.sh"
+deploy:
+- provider: s3
+  access_key_id: $AWS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  bucket: snap.ci.snap-telemetry.io
+  region: us-west-2
+  skip_cleanup: true
+  local-dir: dist
+  upload-dir: plugins
+  acl: public_read
+  on:
+    repo: intelsdi-x/snap-plugin-collector-pysmart
+    tags: true
+- provider: pypi
+  distributions: sdist bdist_wheel
+  server: https://testpypi.python.org/pypi
+  user: $PYPI_USER
+  password: $PYPI_PASSWORD
+  on:
+    tags: true
+    repo: intelsdi-x/snap-plugin-collector-pysmart

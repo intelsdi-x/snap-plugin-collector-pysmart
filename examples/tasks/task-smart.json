@@ -1,0 +1,21 @@
+{
+    "version": 1,
+    "schedule": {
+        "type": "simple",
+        "interval": "1s"
+    },
+    "workflow": {
+        "collect": {
+            "metrics": {
+                "/intel/smartmon/devices/*/*/threshold": {},
+                "/intel/smartmon/devices/*/*/value": {},
+                "/intel/smartmon/devices/*/*/whenfailed": {},
+                "/intel/smartmon/devices/*/*/worst": {},
+                "/intel/smartmon/devices/*/*/type": {},
+                "/intel/smartmon/devices/*/*/updated": {},
+                "/intel/smartmon/devices/*/*/raw": {},
+                "/intel/smartmon/devices/*/*/num": {}
+            }
+        }
+    }
+}
