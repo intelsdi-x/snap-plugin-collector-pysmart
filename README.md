@@ -1,7 +1,7 @@
 # Snap collector plugin - Smartmon in python
 This Snap plugin collects metrics from the Self-Monitoring, Analysis and Reporting Technology (S.M.A.R.T.) leveraging the pySMART library. The purpose of S.M.A.R.T. is to monitor the reliability of the hard drive and predict drive failures, and to carry out different types of drive self-tests.
 
-It's used in the [Snap framework](http://github.com:intelsdi-x/snap).
+It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
 
 1. [Getting Started](#getting-started)
   * [System Requirements](#system-requirements)
@@ -42,12 +42,11 @@ $ git clone https://github.com/<yourGithubID>/snap-plugin-collector-pysmart.git
 
 ### Configuration and Usage
 * Set up the [Snap framework](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started)
-* [Snap Python documention](https://intelsdi-x.github.io/snap-plugin-lib-py/index.html)
+* [Snap Python documentation](https://intelsdi-x.github.io/snap-plugin-lib-py/index.html)
 
 ## Documentation
 
 There are a number of other resources you can review to learn to use this plugin:
-* [Snap pysmart unit test]()
 * [Snap pysmart examples](#examples)
 
 ### Collected Metrics
@@ -99,6 +98,14 @@ See available metrics for your system. *Note* The * in the metric list name indi
 $ snaptel metric list
 ```
 
+Get file plugin for publishing and load it:
+```
+$ wget  http://snap.ci.snap-telemetry.io/plugins/snap-plugin-publisher-file/latest/linux/x86_64/snap-plugin-publisher-file
+$ chmod 755 snap-plugin-publisher-file
+
+$ snaptel plugin load snap-plugin-publisher-file
+```
+
 Create a task file. For example, task-smart.json:
 
 Creating a task manifest file. 
@@ -134,7 +141,8 @@ Creating a task manifest file.
 }
 ```
 
-Load the task manifest [file](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/blob/master/task-smart.json) 
+
+See [exemplary task manifest](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/blob/master/examples/tasks/task-smart.json) 
 
 Start task:
 ```
@@ -186,7 +194,7 @@ We love contributions!
 There's more than one way to give back, from examples to blogs to code updates. See our recommended process in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
-[Snap](http://github.com:intelsdi-x/snap), along with this plugin, is an Open Source software released under the Apache 2.0 [License](LICENSE).
+[Snap](http://github.com/intelsdi-x/snap), along with this plugin, is an Open Source software released under the Apache 2.0 [License](LICENSE).
 
 ## Acknowledgements
 * Authors: [Samantha Alt](https://github.com/saalt),
