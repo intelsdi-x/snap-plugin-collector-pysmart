@@ -23,7 +23,8 @@ setup(
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-    install_requires=['snap-plugin-lib-py>=1.0.10,<2'],
+    install_requires=['snap-plugin-lib-py>=1.0.10,<2','pySMART.smartx>=0.3.6',
+                      'shutilwhich>=1.1.0'],
     description="This is a Snap collector plugin providing storage related "
     + "metrics through smartmontools.",
     entry_points = {

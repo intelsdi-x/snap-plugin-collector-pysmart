@@ -20,7 +20,11 @@ from snap_pysmart import Smartmon, __version__
 import re
 
 def run():
-    Smartmon("SmartmonCollectorPlugin-py", re.search('\d+|$', __version__).group()).start_plugin()
+    version = 0
+    _ver = re.search('^(\d+).*$', __version__) 
+    if len(_ver.groups()) > 0:
+        version = _ver.groups()[0]
+    Smartmon("SmartmonCollectorPlugin-py", int(version)).start_plugin()
 
 if __name__ == "__main__":
     run()
