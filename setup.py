@@ -25,6 +25,8 @@ setup(
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     install_requires=['snap-plugin-lib-py>=1.0.10,<2','pySMART.smartx>=0.3.6',
                       'shutilwhich>=1.1.0'],
+    author="Joel Cooklin",
+    author_email="joel.cooklin@gmail.com",
     description="This is a Snap collector plugin providing storage related "
     + "metrics through smartmontools.",
     entry_points = {
@@ -32,6 +34,7 @@ setup(
             'snap-plugin-collector-pysmart=snap_pysmart.plugin:run'
         ]
     },
+    long_description_markdown_filename="README.md",
     license="Apache 2.0",
     keywords="snap telemetry plugin plugins metrics smartmon smartmontools",
     url="http://github.com/intelsdi-x/snap-plugin-collector-pysmart"

@@ -82,7 +82,21 @@ This is an example running psutil and writing data to a file. It is assumed that
 
 The example is run from a directory which includes snaptel, snapteld, along with the plugins and task file.
 
-In one terminal window, open the Snap daemon:
+Before starting the Snap daemon, install smartmontools using:
+```
+$ brew install smartmontools
+```
+Run the smartctl command using:
+```
+$ smartctl --scan
+IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice -d ata # IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice, ATA device
+```
+Enable SMART, for example:
+```
+smartctl -s on IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice
+```
+
+Start the Snap daemon:
 ```
 $ snapteld -l 1 -t 0
 ```
@@ -92,6 +106,12 @@ In another terminal window:
 Load pysmart plugin
 ```
 $ snaptel plugin load snap_pysmart/plugin.py
+Plugin loaded
+Name: smartmoncollectorplugin-py
+Version: 1
+Type: collector
+Signed: false
+Loaded Time: Tue, 21 Mar 2017 11:20:05 PDT
 ```
 See available metrics for your system. *Note* The * in the metric list name indicates a dynamic metric which will update depending on the device names and attribute names
 ```
@@ -181,6 +201,10 @@ $ snaptel task stop c6d095a6-733d-40cf-a986-9c82aa64b4e2
 Task stopped:
 ID: c6d095a6-733d-40cf-a986-9c82aa64b4e2
 ```
+
+An example of how to deploy the pysmart plugin:
+![img](https://www.dropbox.com/s/hncjdd3oo18x1m3/loadplugin.gif?raw=1)
+
 
 ### Roadmap
 There isn't a current roadmap for this plugin, but it is in active development. As we launch this plugin, we do not have any outstanding requirements for the next release. If you have a feature request, please add it as an [issue](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/issues/new) and/or submit a [pull request](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/pulls).

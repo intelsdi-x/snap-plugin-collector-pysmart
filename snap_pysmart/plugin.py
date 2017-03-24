@@ -17,11 +17,12 @@
 # limitations under the License.
 
 from snap_pysmart import Smartmon, __version__
+from pkg_resources import get_distribution
 import re
 
 def run():
-    version = 0
-    _ver = re.search('^(\d+).*$', __version__) 
+    version = 1
+    _ver = re.search('^(\d+).*$', get_distribution("snap-plugin-collector-pysmart").version) 
     if len(_ver.groups()) > 0:
         version = _ver.groups()[0]
     Smartmon("SmartmonCollectorPlugin-py", int(version)).start_plugin()
