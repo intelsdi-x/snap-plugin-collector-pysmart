@@ -203,7 +203,7 @@ ID: c6d095a6-733d-40cf-a986-9c82aa64b4e2
 ```
 
 An example of how to deploy the pysmart plugin:
-![img](https://www.dropbox.com/s/hncjdd3oo18x1m3/loadplugin.gif?raw=1)
+![img](https://cloud.githubusercontent.com/assets/3925702/24318732/2e5124a0-10c7-11e7-8628-7ce0221ec81e.gif)
 
 
 ### Roadmap
