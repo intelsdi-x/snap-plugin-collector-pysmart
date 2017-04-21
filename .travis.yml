@@ -33,3 +33,11 @@ deploy:
   on:
     tags: true
     repo: intelsdi-x/snap-plugin-collector-pysmart
+- provider: releases
+  api_key: $GITHUB_API_KEY
+  file:
+    - dist/snap-plugin-collector-pysmart/latest/linux/x86_64/snap-plugin-collector-pysmart-linux-x86_64.aci    
+  skip_cleanup: true
+  on:
+    repo: intelsdi-x/snap-plugin-collector-pysmart
+    tags: true    
