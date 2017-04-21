@@ -51,17 +51,18 @@ $(cd ${__proj_dir}/dist && mkdir acbuild-${acbuild_ver} && wget -L -O- https://g
 set -e
 PATH="$PATH:${__proj_dir}/dist/acbuild-${acbuild_ver}"
 
-if [ -z "$VIRTUAL_ENV" ]; then
-    echo "Need to set VIRTUAL_ENV"
+if ! type pyenv >> /dev/null; then
+    echo "install pyenv"
     _info "hint: see https://github.com/yyuu/pyenv"
     exit 1
 fi
 
-_info "installing deps into virtualenv"
+pyenv install -s 2.7.12
+
 _debug "running: pip install -r requirements.txt"
-pip install -r ${__proj_dir}/requirements.txt
+$(pyenv prefix 2.7.12)/bin/pip install -r ${__proj_dir}/requirements.txt
 _info "installing snap-plugin-collector-pysmart"
-pip install ${__proj_dir}
+$(pyenv prefix 2.7.12)/bin/pip install ${__proj_dir}
 
 _info "packaging ${__proj_dir}/SmartmonCollectorPlugin.py"
 _info "running: acbuild begin"
@@ -69,11 +70,24 @@ acbuild begin
 _info "running: acbuild set-name snap-plugin-collector-pysmart"
 acbuild set-name snap-plugin-collector-pysmart
 _info "running: rsync $VIRTUAL_ENV .venv-relocatable -a --copy-links -v"
-rsync ${VIRTUAL_ENV}/ .venv-relocatable -q --delete -a --copy-links -v
+rsync $(pyenv prefix 2.7.12)/ .venv-relocatable -q --delete -a --copy-links -v
 _info "running: acbuild copy $VIRTUAL_ENV .venv-relocatable"
 acbuild copy .venv-relocatable .venv
 _info "running: acbuild copy ${__proj_dir}/snap_pysmart/plugin.py plugin.py"
 acbuild copy ${__proj_dir}/snap_pysmart/plugin.py plugin.py
+_info "creating run.sh"
+cat <<EOF>run.sh
+#!/bin/bash
+
+DIR="\$( cd "\$( dirname "\${BASH_SOURCE[0]}"  )" && pwd  )"
+LD_LIBRARY_PATH=\${DIR}/.venv/lib
+\${DIR}/.venv/bin/python plugin.py
+EOF
+chmod 755 run.sh
+_info "running: acbuild copy run.sh run.sh"
+acbuild copy run.sh run.sh
+_info "running: acbuild set-exec run.sh"
+acbuild set-exec run.sh
 _info "running: acbuild set-exec ./.venv/bin/python plugin"
 acbuild set-exec ./.venv/bin/python plugin.py
 _info "running: write ${__proj_dir}/dist/snap-plugin-collector-pysmart/${VERSION}/linux/${HOSTTYPE}/snap-plugin-collector-pysmart-${VERSION}-linux-x86_64.aci"
