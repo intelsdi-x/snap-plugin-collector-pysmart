@@ -16,9 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from snap_pysmart import Smartmon, __version__
+from snap_pysmart import Smartmon
 from pkg_resources import get_distribution
 import re
+
 
 def run():
     version = 1
