@@ -52,7 +52,7 @@ class Smartmon(snap.Collector):
         # adds namespace elements (static and dynamic) via namespace methods
         for i in ("threshold", "value", "whenfailed", "worst", "type",
                   "updated", "raw", "num"):
-            metric = snap.Metric(version=1,
+            metric = snap.Metric(version=self.meta.version,
                                  Description="SMARTMON list of dynamic devices"
                                  " and attributes")
             metric.namespace.add_static_element("intel")
