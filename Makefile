@@ -17,9 +17,9 @@
 
 pkg:
 	$(MAKE) clean
-	bash -c "./scripts/create_pkg.sh"
+	bash -c "./scripts/pkg.sh snap_pysmart snap-plugin-collector-pysmart"
 test:
-	pytest --cov=SmartmonCollectorPlugin
+	tox
 clean:
 	rm -rf dist .venv-reloactable *.egg-info build .acbuild
 	find . -name '*.pyc' -exec rm --force {} \;

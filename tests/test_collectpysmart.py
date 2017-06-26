@@ -23,7 +23,7 @@ from mock import MagicMock, Mock
 
 import snap_plugin.v1 as snap
 from shutilwhich import which
-from . import Smartmon
+from snap_pysmart import Smartmon
 
 
 class SmartTestCase(unittest.TestCase):

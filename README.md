@@ -21,6 +21,9 @@ It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
 * [golang 1.6+](https://golang.org/dl/) (needed only for building)
 * [python 2.7+](https://www.python.org/downloads/)
 
+For testing:
+* [tox](https://tox.readthedocs.io/en/latest/) (install using `pip install tox`)
+
 ### Operating systems
 All OSs currently supported by snap:
 * Linux/amd64
