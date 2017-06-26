@@ -68,7 +68,7 @@ _info "preparing virtual environment $PYTHON_ENV"
 _info "virtual environment: installing plugin requirements"
 $PYTHON_ENV/bin/pip install -r ${__proj_dir}/requirements.txt
 _info "virtual environment: installing plugin package"
-$PYTHON_ENV/bin/pip install ${__proj_dir}
+$PYTHON_ENV/bin/pip install -I ${__proj_dir}
 _info "virtual environment: making relocatable"
 
 _info "packaging ${__proj_dir}/${PLUGIN_DIR}"

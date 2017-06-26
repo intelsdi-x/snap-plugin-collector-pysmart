@@ -43,6 +43,10 @@ Clone repo into `$GOPATH/src/github.com/intelsdi-x/`:
 $ git clone https://github.com/<yourGithubID>/snap-plugin-collector-pysmart.git
 ```
 
+Run `make pkg` to build package. Package will be available under "dist" folder.
+
+NOTE: If you got Snap error "received metric with bad version" during development (after adding some commits), run "git tag -af <YOUR_VERSION> -m <VERSION_INFO>" or just "git tag -f <YOUR_VERSION>" to update version tag, and rebuild package. Plugin version is gathered from git tags.
+
 ### Configuration and Usage
 * Set up the [Snap framework](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started)
 * [Snap Python documentation](https://intelsdi-x.github.io/snap-plugin-lib-py/index.html)
