@@ -9,10 +9,9 @@ python:
 install: 
 -  pip install tox-travis
 -  pip install setuptools-markdown
-script: tox
+script: make test
 before_deploy:
-- "rm -rf dist"
-- "./scripts/pkg.sh"
+  - make pkg
 deploy:
 - provider: s3
   access_key_id: $AWS_KEY_ID
