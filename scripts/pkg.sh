@@ -69,8 +69,6 @@ _info "virtual environment: installing plugin requirements"
 $PYTHON_ENV/bin/pip install -r ${__proj_dir}/requirements.txt
 _info "virtual environment: installing plugin package"
 $PYTHON_ENV/bin/pip install -I ${__proj_dir}
-_info "virtual environment: making relocatable"
-
 _info "packaging ${__proj_dir}/${PLUGIN_DIR}"
 acbuild begin
 _info "packaging: setting name ${PLUGIN_NAME}"
@@ -78,7 +76,7 @@ acbuild set-name ${PLUGIN_NAME}
 _info "packaging: copying python virtual environment"
 acbuild copy $PYTHON_ENV .venv
 _info "packaging: setting plugin startup command"
-acbuild set-exec ./.venv/bin/${PLUGIN_NAME}
+acbuild set-exec ./.venv/bin/python ./.venv/bin/${PLUGIN_NAME}
 _info "packaging: writing ${__proj_dir}/dist/${PLUGIN_NAME}/linux/${HOSTTYPE}/${PLUGIN_NAME}-linux-${HOSTTYPE}.aci"
 mkdir -p "${__proj_dir}/dist/${PLUGIN_NAME}/linux/${HOSTTYPE}"
 acbuild write ${__proj_dir}/dist/${PLUGIN_NAME}/linux/${HOSTTYPE}/${PLUGIN_NAME}-linux-${HOSTTYPE}.aci
