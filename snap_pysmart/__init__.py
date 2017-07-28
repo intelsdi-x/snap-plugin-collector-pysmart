@@ -17,6 +17,7 @@
 # limitations under the License.
 
 import logging
+import re
 import time
 import sys
 
@@ -71,6 +72,7 @@ class Smartmon(snap.Collector):
         return snap.ConfigPolicy()
 
     def collect(self, metrics):
+        metricsFound = []
         metricsToReturn = []
         # set the time before the loop in case the time changes as the metric
         # values are being set
@@ -113,5 +115,32 @@ class Smartmon(snap.Collector):
                             _metrics.data = att.num
                         # store the time stamp for each metric
                         _metrics.timestamp = ts_now
-                        metricsToReturn.append(_metrics)
+                        metricsFound.append(_metrics)
+
+        for mt in metrics:
+            matching = self.lookup_metric_by_namespace(mt, metricsFound)
+            if len(matching):
+                metricsToReturn.extend(matching)
+
         return metricsToReturn
+
+    def namespace2str(self, ns, verb = False):
+        st = ''
+        for e in ns:
+            if verb:
+                st = (st + '/' + "[" + e.name + "]") if e.name else (st + '/' + e.value)
+            else:
+                st = st + '/' + e.value
+        return st
+
+    def lookup_metric_by_namespace(self, lookupmetric, metrics):
+        ret = []
+        lookupns = self.namespace2str(lookupmetric.namespace)
+        lookupns = lookupns.replace('/', '\/').replace('*', '.*') + '$'
+        nsre = re.compile(lookupns)
+        for met in metrics:
+            ns = self.namespace2str(met.namespace)
+            match = nsre.search(ns)
+            if match:
+                ret.append(met)
+        return ret
