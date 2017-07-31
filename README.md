@@ -19,6 +19,7 @@ It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
 ## Getting Started
 ### System Requirements 
 * [python 2.7+](https://www.python.org/downloads/)
+* [smartmontools](https://www.smartmontools.org)
 * [pyenv 1.0.10+](https://github.com/pyenv/pyenv)
 * [acbuild 0.4.0+](https://github.com/containers/build)
     The acbuild tool will be downloaded automatically while building ACI package, but it is recommended to install it manually in your system to speed up build process. For Ubuntu, you can do it just by:
@@ -36,7 +37,7 @@ All OSs currently supported by snap:
 * Darwin/amd64
 
 ### Installation
-#### Download psutil plugin binary:
+#### Download pysmart plugin binary:
 You can get the pre-built binaries for your OS and architecture under the plugin's [release](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/releases) page.  For Snap, check [here](https://github.com/intelsdi-x/snap/releases).
 
 
@@ -91,7 +92,7 @@ Namespace | Description (optional)
 
 
 ### Examples
-This is an example running psutil and writing data to a file. It is assumed that you are using the latest Snap binary and plugins.
+This is an example running pysmart and writing data to a file. It is assumed that you are using the latest Snap binary and plugins.
 
 The example is run from a directory which includes snaptel, snapteld, along with the plugins and task file.
 
