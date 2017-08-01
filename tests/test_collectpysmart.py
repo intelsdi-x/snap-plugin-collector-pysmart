@@ -43,10 +43,10 @@ class SmartTestCase(unittest.TestCase):
         att.num = "7"
         att.when_failed = "-"
         device = MagicMock()
-        device.name = "/dev/sda"
-        device.attributes.__iter__.return_value = [att]
+        device.name = "sda"
+        device.attributes = [att]
         mock_devices = MagicMock()
-        mock_devices.devices.__iter__.return_value = iter([device])
+        mock_devices.devices = [device]
         mock_devlist = Mock()
         mock_devlist.return_value = mock_devices
 
@@ -122,3 +122,16 @@ class SmartTestCase(unittest.TestCase):
         ])
         # test that the metrics have been set in metrics
         assert len(metrics) > 0
+
+        metrics = plugin.collect([
+            snap.Metric(
+                namespace=[
+                    snap.NamespaceElement(value="intel"),
+                    snap.NamespaceElement(value="smartmon"),
+                    snap.NamespaceElement(value="devices"),
+                    snap.NamespaceElement(value="sda"),
+                    snap.NamespaceElement(value="some-attribute"),
+                    snap.NamespaceElement(value="value")]),
+        ])
+        # test that only specific instance metric have been set in metrics
+        assert len(metrics) == 1

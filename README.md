@@ -18,8 +18,15 @@ It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
 
 ## Getting Started
 ### System Requirements 
-* [golang 1.6+](https://golang.org/dl/) (needed only for building)
 * [python 2.7+](https://www.python.org/downloads/)
+* [smartmontools](https://www.smartmontools.org)
+* [pyenv 1.0.10+](https://github.com/pyenv/pyenv)
+* [acbuild 0.4.0+](https://github.com/containers/build)
+    The acbuild tool will be downloaded automatically while building ACI package, but it is recommended to install it manually in your system to speed up build process. For Ubuntu, you can do it just by:
+
+    ```
+    sudo apt-get install acbuild
+    ```
 
 For testing:
 * [tox](https://tox.readthedocs.io/en/latest/) (install using `pip install tox`)
@@ -30,7 +37,7 @@ All OSs currently supported by snap:
 * Darwin/amd64
 
 ### Installation
-#### Download psutil plugin binary:
+#### Download pysmart plugin binary:
 You can get the pre-built binaries for your OS and architecture under the plugin's [release](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/releases) page.  For Snap, check [here](https://github.com/intelsdi-x/snap/releases).
 
 
@@ -85,7 +92,7 @@ Namespace | Description (optional)
 
 
 ### Examples
-This is an example running psutil and writing data to a file. It is assumed that you are using the latest Snap binary and plugins.
+This is an example running pysmart and writing data to a file. It is assumed that you are using the latest Snap binary and plugins.
 
 The example is run from a directory which includes snaptel, snapteld, along with the plugins and task file.
 
@@ -103,14 +110,36 @@ Enable SMART, for example:
 smartctl -s on IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice
 ```
 
-Start the Snap daemon:
-```
-$ snapteld -l 1 -t 0
-```
-The option "-l 1" is for setting the debugging log level and "-t 0" is for disabling plugin signing.
+#### Preparing environment
+If you want to edit plugin code, it is not needed to build ACI package every time the source code changed.
+It is quite easy to prepare virtual environment, so you don't need to install requirements and specific Python version directly on your machine:
 
-In another terminal window:
-Load pysmart plugin
+1. Install Python 2.7.12 as your virtual environment and switch to it globally:
+    ```
+    pyenv install -s 2.7.12
+    pyenv global 2.7.12
+    ```
+2. Install requirements in your virtual environment:
+    ```
+    pip install -r requirements.txt
+    pip install -r test-requirements.txt
+    ```
+
+After completing these steps, you can just start Python scripts and tools like `pip` as usual, but Python 2.7.12 will be used by default. You can find all environment files and installed packages in `$HOME/.pyenv/versions/2.7.12`. If you want to switch back to your system default Python version, type `pyenv global system`.
+
+#### Loading plugin
+
+##### Load directly from source:
+
+Start the Snap daemon with root permissions (needed by pySMART library). As sudo resets all environment variables by default, you will need to pass PATH / PYTHONPATH environment variables for Snap to be able to access your Python virtual environment and plugin modules.
+
+In plugin root directory run:
+```
+$ sudo PATH=$PATH PYTHONPATH=$(pwd) snapteld -l 1 -t 0
+```
+*The option "-l 1" is for setting the debugging log level and "-t 0" is for disabling plugin signing.*
+
+Then you can simply load plugin directly from source:
 ```
 $ snaptel plugin load snap_pysmart/plugin.py
 Plugin loaded
@@ -118,8 +147,36 @@ Name: smartmoncollectorplugin-py
 Version: 1
 Type: collector
 Signed: false
+Loaded Time: Thu, 20 Jul 2017 16:57:35 CEST
+```
+
+##### Load from ACI package:
+
+If using ACI package, you don't need to pass any environment variables, just start Snap daemon with root permissions:
+```
+$ sudo snapteld -l 1 -t 0
+```
+
+Then load pysmart plugin from ACI package:
+```
+$ snaptel plugin load dist/snap-plugin-collector-pysmart/linux/x86_64/snap-plugin-collector-pysmart-linux-x86_64.aci
+Plugin loaded
+Name: smartmoncollectorplugin-py
+Version: 1
+Type: collector
+Signed: false
 Loaded Time: Tue, 21 Mar 2017 11:20:05 PDT
 ```
+
+##### Plugin diagnostics
+Plugin diagnostics allows to preview plugin info such as metric catalog or collected metrics without loading plugin in Snap. It is really helpful when testing changes in plugin source code.
+
+To start plugin diagnostics, in plugin root directory run:
+```
+$ sudo PATH=$PATH PYTHONPATH=$(pwd) snap_pysmart/plugin.py
+```
+
+#### Creating task for plugin
 See available metrics for your system. *Note* The * in the metric list name indicates a dynamic metric which will update depending on the device names and attribute names
 ```
 $ snaptel metric list
