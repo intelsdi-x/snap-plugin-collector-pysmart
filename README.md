@@ -18,6 +18,7 @@ It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
 
 ## Getting Started
 ### System Requirements 
+* [smartmontools](https://www.smartmontools.org)
 * [python 2.7+](https://www.python.org/downloads/)
 * [smartmontools](https://www.smartmontools.org)
 * [pyenv 1.0.10+](https://github.com/pyenv/pyenv)
@@ -32,41 +33,62 @@ For testing:
 * [tox](https://tox.readthedocs.io/en/latest/) (install using `pip install tox`)
 
 ### Operating systems
-All OSs currently supported by snap:
-* Linux/amd64
-* Darwin/amd64
+The plugin should work on any platform with Python2.7 and where smartclt is installed.  The plugin has been tested on Linux and MacOS.
 
 ### Installation
-#### Download pysmart plugin binary:
-You can get the pre-built binaries for your OS and architecture under the plugin's [release](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/releases) page.  For Snap, check [here](https://github.com/intelsdi-x/snap/releases).
 
+#### Python module
 
-#### To build the plugin binary:
-Fork https://github.com/intelsdi-x/snap-plugin-collector-pysmart
+The preferred way to run Python based plugins is to leverage the python package
+index.  This means that the Snap daemon, *snapteld*, will need to be run in an
+environment where the python module `snap-plugin-collector-pysmart` was installed.
+If you install the plugin (`pip install snap-plugin-collector-pysmart`) into the
+system's Python environment that should be enough.  If you use a
+[virtualenv](https://pypi.python.org/pypi/virtualenv) be sure to activate it 
+before starting `snapteld` since it will need access to the plugin and its
+dependencies.
 
-Clone repo into `$GOPATH/src/github.com/intelsdi-x/`:
+To install the plugin run: 
+* `pip install snap-plugin-collector-pysmart`
+
+The plugin includes a command line entry point also called
+`snap-plugin-collector-pysmart` which should be in your path after installation.
+
+Find the plugin's command line script:
+* `which snap-plugin-collector-pysmart`
 
 ```
-$ git clone https://github.com/<yourGithubID>/snap-plugin-collector-pysmart.git
+which snap-plugin-collector-pysmart
+> /Users/jrcookli/.pyenv/versions/py2712/bin/snap-plugin-collector-pysmart
 ```
 
-Run `make pkg` to build package. Package will be available under "dist" folder.
+The entry point script, snap-plugin-collector-pysmart, is what we will be
+load into `snapteld` with the following command.
 
-NOTE: If you got Snap error "received metric with bad version" during development (after adding some commits), run "git tag -af <YOUR_VERSION> -m <VERSION_INFO>" or just "git tag -f <YOUR_VERSION>" to update version tag, and rebuild package. Plugin version is gathered from git tags.
+```
+snaptel plugin load `which snap-plugin-collector-pysmart`
+```
 
-### Configuration and Usage
-* Set up the [Snap framework](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started)
-* [Snap Python documentation](https://intelsdi-x.github.io/snap-plugin-lib-py/index.html)
+#### Plugin package
 
-## Documentation
+An alternative installation method for Linux X86_64 is to use the binary package.
+The package includes a Python 2.7 distribution with the plugin already installed.
 
-There are a number of other resources you can review to learn to use this plugin:
-* [Snap pysmart examples](#examples)
+You can get the pre-built plugin package under
+[releases](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/releases)
+page.
 
-### Collected Metrics
-This plugin will identify all the devices on the node which have [S.M.A.R.T.](https://www.smartmontools.org/) enabled and automatically populate the list of collected metrics based on which are being exposed by the device. This will be different per manufacturer and per device. 
+Known issues:
+* Longer plugin load times 
+* A package is only available for Linux X86_64
 
-* Ensure that S.M.A.R.T. is enabled on the device
+Since the current default timeout may be exceeded start `snapteld` with the flag
+`--plugin-load-timeout 30` (e.g. `snapteld -t 0 -1 --plugin-load-timeout 30`).
+Lastly, when you load the plugin you will also want to increase the clients
+timeout using the flag `--timeout 30s` (e.g. `snaptel --timeout 30s plugin load snap-plugin-collector-pysmart`).
+
+### SMART Metrics
+This plugin will identify all the devices on the node which have [S.M.A.R.T.](https://www.smartmontools.org/) enabled and automatically populate the list of collected metrics based on which are being exposed by the device. This will be different per manufacturer and per device.
 
 Below is an example of the metrics being gathered by the Intel 3700 SSD
 * Note: $deviceName will be dependent on the path (i.e. /dev/sda1)
@@ -90,58 +112,52 @@ Namespace | Description (optional)
 /intel/smartmon/devices/$deviceName/Host_Reads_32mb_Total_LBAs_Read | reports the total number of sectors read by the host system
 /intel/smartmon/devices/$deviceName/NAND_Writes_32mb | reports the total number of sectors writen by the host system
 
+### Configuration and Usage
+* Start snapteld 
+  * See the Snap [readme](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started) for getting started details
+  * Start snap: `snapteld -t 0 -l 1`
+* Ensure that smartctl is **installed** and **enabled**
+  * To install smartctl run:
+     * On MacOS `brew install smartmontools`
+     * On Ubuntu `apt-get install smartmontools`
+     * On RedHat/CentOS `yum install smartmontools`
+  * To ensure SMART is enabled run:
+    * `smartctl --scan`
+
 
 ### Examples
-This is an example running pysmart and writing data to a file. It is assumed that you are using the latest Snap binary and plugins.
+In this example we will collect data from SMART and publish it to a file. It is assumed that you are using the latest Snap binary and plugins.
 
 The example is run from a directory which includes snaptel, snapteld, along with the plugins and task file.
 
-Before starting the Snap daemon, install smartmontools using:
-```
-$ brew install smartmontools
-```
-Run the smartctl command using:
+1. Verify S.M.A.R.T is enable
+
+  * Run the smartctl command using:
 ```
 $ smartctl --scan
 IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice -d ata # IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice, ATA device
 ```
-Enable SMART, for example:
+  * Enable SMART:
 ```
 smartctl -s on IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice
 ```
 
-#### Preparing environment
-If you want to edit plugin code, it is not needed to build ACI package every time the source code changed.
-It is quite easy to prepare virtual environment, so you don't need to install requirements and specific Python version directly on your machine:
+2. Start the Snap daemon:
 
-1. Install Python 2.7.12 as your virtual environment and switch to it globally:
-    ```
-    pyenv install -s 2.7.12
-    pyenv global 2.7.12
-    ```
-2. Install requirements in your virtual environment:
-    ```
-    pip install -r requirements.txt
-    pip install -r test-requirements.txt
-    ```
+  * Run:
 
-After completing these steps, you can just start Python scripts and tools like `pip` as usual, but Python 2.7.12 will be used by default. You can find all environment files and installed packages in `$HOME/.pyenv/versions/2.7.12`. If you want to switch back to your system default Python version, type `pyenv global system`.
+  ```
+  $ snapteld -l 1 -t 0
+  ```
 
-#### Loading plugin
+  The option "-l 1" is for setting the debugging log level and "-t 0" is for disabling plugin signing.
 
-##### Load directly from source:
+3.  Load the plugin:
 
-Start the Snap daemon with root permissions (needed by pySMART library). As sudo resets all environment variables by default, you will need to pass PATH / PYTHONPATH environment variables for Snap to be able to access your Python virtual environment and plugin modules.
+  * Run (in a different terminal):
 
-In plugin root directory run:
 ```
-$ sudo PATH=$PATH PYTHONPATH=$(pwd) snapteld -l 1 -t 0
-```
-*The option "-l 1" is for setting the debugging log level and "-t 0" is for disabling plugin signing.*
-
-Then you can simply load plugin directly from source:
-```
-$ snaptel plugin load snap_pysmart/plugin.py
+$ snaptel plugin load `which snap-plugin-collector-pysmart`
 Plugin loaded
 Name: smartmoncollectorplugin-py
 Version: 1
@@ -168,69 +184,78 @@ Signed: false
 Loaded Time: Tue, 21 Mar 2017 11:20:05 PDT
 ```
 
-##### Plugin diagnostics
-Plugin diagnostics allows to preview plugin info such as metric catalog or collected metrics without loading plugin in Snap. It is really helpful when testing changes in plugin source code.
+  * List the metric catalog by running:
 
-To start plugin diagnostics, in plugin root directory run:
-```
-$ sudo PATH=$PATH PYTHONPATH=$(pwd) snap_pysmart/plugin.py
-```
-
-#### Creating task for plugin
-See available metrics for your system. *Note* The * in the metric list name indicates a dynamic metric which will update depending on the device names and attribute names
 ```
 $ snaptel metric list
+NAMESPACE 				 VERSIONS
+/intel/smartmon/devices/*/*/num 	 1
+/intel/smartmon/devices/*/*/raw 	 1
+/intel/smartmon/devices/*/*/threshold 	 1
+/intel/smartmon/devices/*/*/type 	 1
+/intel/smartmon/devices/*/*/updated 	 1
+/intel/smartmon/devices/*/*/value 	 1
+/intel/smartmon/devices/*/*/whenfailed 	 1
+/intel/smartmon/devices/*/*/worst 	 1
 ```
 
-Get file plugin for publishing and load it:
+  See available metrics for your system. Note the `*` in the metric list.  It
+  indicates a dynamic metric which will be update depending on the device names
+  and attribute available on the system being monitored.
+
+4.  Download the file publisher plugin and load it
+
+  *  Get the latest file publisher plugin by running:
+
 ```
 $ wget  http://snap.ci.snap-telemetry.io/plugins/snap-plugin-publisher-file/latest/linux/x86_64/snap-plugin-publisher-file
-$ chmod 755 snap-plugin-publisher-file
+```
 
+  * Load the file publisher plugin by running:
+
+```
 $ snaptel plugin load snap-plugin-publisher-file
+Plugin loaded
+Name: file
+Version: 2
+Type: publisher
+Signed: false
+Loaded Time: Sat, 22 Apr 2017 14:47:59 PDT
 ```
 
-Create a task file. For example, task-smart.json:
+  * Create a task file by running:
 
-Creating a task manifest file. 
 ```
-{
-    "version": 1,
-    "schedule": {
-        "type": "simple",
-        "interval": "1s"
-    },
-    "workflow": {
-        "collect": {
-            "metrics": {
-                "/intel/smartmon/devices/*/*/threshold": {},
-                "/intel/smartmon/devices/*/*/value": {},
-                "/intel/smartmon/devices/*/*/whenfailed": {},
-                "/intel/smartmon/devices/*/*/worst": {},
-                "/intel/smartmon/devices/*/*/type": {},
-                "/intel/smartmon/devices/*/*/updated": {},
-                "/intel/smartmon/devices/*/*/raw": {},
-                "/intel/smartmon/devices/*/*/num": {}
-            },
-            "publish": [
-                {
-                    "plugin_name": "file",
-                    "config": {
-                        "file": "/tmp/published_pysmart"
-                    }
-                }
-            ]
-        }
-    }
-}
+cat <<EOF>pysmart-file.yaml
+---
+  version: 1
+  schedule:
+    type: "simple"
+    interval: "1s"
+  workflow:
+    collect:
+      metrics:
+        /intel/smartmon/devices/*/*/num: {}
+        /intel/smartmon/devices/*/*/raw: {}
+        /intel/smartmon/devices/*/*/threshold: {}
+        /intel/smartmon/devices/*/*/type: {}
+        /intel/smartmon/devices/*/*/updated: {}
+        /intel/smartmon/devices/*/*/value: {}
+        /intel/smartmon/devices/*/*/whenfailed: {}
+        /intel/smartmon/devices/*/*/worst: {}
+      publish:
+        -
+          plugin_name: file
+          config:
+            file: /tmp/published_pysmart.out
+EOF
 ```
 
+  [Example (JSON) task manifest](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/blob/master/examples/tasks/task-smart.json) 
 
-See [exemplary task manifest](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/blob/master/examples/tasks/task-smart.json) 
-
-Start task:
+5.  Start task by running:
 ```
-$ snaptel task create -t task-smart.json
+$ snaptel task create -t pysmart-file.yaml
 Using task manifest to create task
 Task created
 ID: c6d095a6-733d-40cf-a986-9c82aa64b4e2
@@ -238,37 +263,26 @@ Name: Task-c6d095a6-733d-40cf-a986-9c82aa64b4e2
 State: Running
 ```
 
-See the pysmart plugin task
+  * List the task by running: 
 ```
 $ snaptel task list
 ID 					 NAME 						 STATE 		 HIT 	 MISS 	 FAIL 	 CREATED 		 LAST FAILURE
 c6d095a6-733d-40cf-a986-9c82aa64b4e2 	 Task-c6d095a6-733d-40cf-a986-9c82aa64b4e2 	 Running 	 9 	 0 	 0 	 10:39AM 2-23-2017
 ```
-Watch the collection of the metrics
+
+  * Watch the task by running:
 ```
 $ snaptel task watch c6d095a6-733d-40cf-a986-9c82aa64b4e2
 ```
 
-See std output stream as the metrics are collected
-```
-|intel|smartmon|devices|IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice|Power-Off_Retract_Count|threshold 	 000 	 2017-02-23 10:45:44.698632001 -0800 PST
-|intel|smartmon|devices|IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice|Power-Off_Retract_Count|value 	 099 	 2017-02-23 10:45:44.698632001 -0800 PST
-|intel|smartmon|devices|IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice|Power_Cycle_Count|threshold 		 000 	 2017-02-23 10:45:44.698632001 -0800 PST
-|intel|smartmon|devices|IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice|Power_Cycle_Count|value 		 094 	 2017-02-23 10:45:44.698632001 -0800 PST
-|intel|smartmon|devices|IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice|Power_On_Hours|threshold 		 000 	 2017-02-23 10:45:44.698632001 -0800 PST
-|intel|smartmon|devices|IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/IOPP/SSD0@0/AppleAHCI/PRT0@0/IOAHCIDevice@0/AppleAHCIDiskDriver/IOAHCIBlockStorageDevice|Power_On_Hours|value 			 099 	 2017-02-23 10:45:44.698632001 -0800 PST
-```
-
-Stop task:
+  * Stop the task by running:
 ```
 $ snaptel task stop c6d095a6-733d-40cf-a986-9c82aa64b4e2
 Task stopped:
 ID: c6d095a6-733d-40cf-a986-9c82aa64b4e2
 ```
 
-An example of how to deploy the pysmart plugin:
-![img](https://cloud.githubusercontent.com/assets/3925702/24318732/2e5124a0-10c7-11e7-8628-7ce0221ec81e.gif)
-
+![fig0](https://www.dropbox.com/s/tp24zyapu28gdkl/fig0.gif?raw=1)
 
 ### Roadmap
 There isn't a current roadmap for this plugin, but it is in active development. As we launch this plugin, we do not have any outstanding requirements for the next release. If you have a feature request, please add it as an [issue](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/issues/new) and/or submit a [pull request](https://github.com/intelsdi-x/snap-plugin-collector-pysmart/pulls).
@@ -283,9 +297,5 @@ There's more than one way to give back, from examples to blogs to code updates. 
 
 ## License
 [Snap](http://github.com/intelsdi-x/snap), along with this plugin, is an Open Source software released under the Apache 2.0 [License](LICENSE).
-
-## Acknowledgements
-* Authors: [Samantha Alt](https://github.com/saalt),
-           [Joel Cooklin](https://github.com/jcooklin)
 
 And **thank you!** Your contribution, through code and participation, is incredibly important to us.
