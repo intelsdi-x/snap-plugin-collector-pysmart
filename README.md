@@ -13,13 +13,24 @@ It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
   * [Roadmap](#roadmap)
 3. [Community Support](#community-support)
 4. [Contributing](#contributing)
-5. [License](#license-and-authors)
+5. [License](#license)
 6. [Acknowledgements](#acknowledgements)
 
 ## Getting Started
 ### System Requirements 
 * [smartmontools](https://www.smartmontools.org)
 * [python 2.7+](https://www.python.org/downloads/)
+* [smartmontools](https://www.smartmontools.org)
+* [pyenv 1.0.10+](https://github.com/pyenv/pyenv)
+* [acbuild 0.4.0+](https://github.com/containers/build)
+    The acbuild tool will be downloaded automatically while building ACI package, but it is recommended to install it manually in your system to speed up build process. For Ubuntu, you can do it just by:
+
+    ```
+    sudo apt-get install acbuild
+    ```
+
+For testing:
+* [tox](https://tox.readthedocs.io/en/latest/) (install using `pip install tox`)
 
 ### Operating systems
 The plugin should work on any platform with Python2.7 and where smartclt is installed.  The plugin has been tested on Linux and MacOS.
@@ -115,7 +126,7 @@ Namespace | Description (optional)
 
 
 ### Examples
-In this example we will collect data from SMART and publish it to a file.
+In this example we will collect data from SMART and publish it to a file. It is assumed that you are using the latest Snap binary and plugins.
 
 The example is run from a directory which includes snaptel, snapteld, along with the plugins and task file.
 
@@ -147,6 +158,24 @@ smartctl -s on IOService:/AppleACPIPlatformExpert/PCI0@0/AppleACPIPCI/RP06@1C,5/
 
 ```
 $ snaptel plugin load `which snap-plugin-collector-pysmart`
+Plugin loaded
+Name: smartmoncollectorplugin-py
+Version: 1
+Type: collector
+Signed: false
+Loaded Time: Thu, 20 Jul 2017 16:57:35 CEST
+```
+
+##### Load from ACI package:
+
+If using ACI package, you don't need to pass any environment variables, just start Snap daemon with root permissions:
+```
+$ sudo snapteld -l 1 -t 0
+```
+
+Then load pysmart plugin from ACI package:
+```
+$ snaptel plugin load dist/snap-plugin-collector-pysmart/linux/x86_64/snap-plugin-collector-pysmart-linux-x86_64.aci
 Plugin loaded
 Name: smartmoncollectorplugin-py
 Version: 1

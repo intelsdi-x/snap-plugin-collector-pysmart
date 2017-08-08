@@ -9,10 +9,9 @@ python:
 install: 
 -  pip install tox-travis
 -  pip install setuptools-markdown
-script: tox
+script: make test
 before_deploy:
-- "rm -rf dist"
-- "./scripts/create_pkg.sh"
+  - make pkg
 deploy:
 - provider: s3
   access_key_id: $AWS_KEY_ID
@@ -37,7 +36,7 @@ deploy:
 - provider: releases
   api_key: $GITHUB_API_KEY
   file:
-    - dist/snap-plugin-collector-pysmart/latest/linux/x86_64/snap-plugin-collector-pysmart-linux-x86_64.aci    
+    - dist/snap-plugin-collector-pysmart/linux/x86_64/snap-plugin-collector-pysmart-linux-x86_64.aci    
   skip_cleanup: true
   on:
     repo: intelsdi-x/snap-plugin-collector-pysmart
