@@ -1,20 +1,16 @@
 language: python
 sudo: false
-addons:
-  apt_packages:
-    - pandoc
 dist: trusty
 python:
 - '2.7'
 install: 
 -  pip install tox-travis
--  pip install setuptools-markdown
 script: make test
 before_deploy:
   - make pkg
 deploy:
 - provider: s3
-  access_key_id: $AWS_KEY_ID
+  access_key_id: $AWS_ACCESS_KEY_ID
   secret_access_key: $AWS_SECRET_ACCESS_KEY
   bucket: snap.ci.snap-telemetry.io
   region: us-west-2
@@ -27,7 +23,6 @@ deploy:
     tags: true
 - provider: pypi
   distributions: sdist bdist_wheel
-  server: https://pypi.python.org/pypi
   user: $PYPI_USER
   password: $PYPI_PASSWORD
   on:
