@@ -3,6 +3,12 @@ sudo: false
 dist: trusty
 python:
 - '2.7'
+sudo: required
+env:
+  global:
+    - secure: "kvgJtcFFuYGH1dodMn7pk67N8xP+Jb4ZH04gFm6Q23FGja62VKaiV2lMqrAK/jIFVfe+S7m5hRA7VkTjALYVkk4FYS3SCGtL+kMzARAbVuH9ergw9llFpquuEVkCzhsBfmOQNEpa9ZM4j7H7dsEZCtNaYXREjrrhw8Kvxr7uhovCz5ysUvxodtzi12lC8RyhGdrqSoDd9nkULD/UJJH1PM6It7NPG5px8julVcavbxfEVnDga9eDvOI+kZRlejqrQn1wQDf1qyK33Ntyi8dFBSxqmz2bwuUtixBlKJxk+oBT4Fy1prTTiLjbEuoWfoZjwVRLPAWh8rz5U9SdzgWghKrhF3acGDAah223Yq6k4hNpd/5LYm+VDtU7H+tn06U+D7jdRBRjaYCcP6Tv/yC9UOgox9H7TNfSFJmvTPiWSKnqPxURDhFUrKMxMLebOftYSiZH+FuvVKedIJQNbnH+UW1iwSybES7IVip4WmS3sQ+nm/dZC+P/U7jygCd9Pg7LFdM1tSGWXGrvzkgV4DjnyfRmR3o6we3NNKHQhhLFV3D4DS20vz+pnrN5oTBz6Y04XSx5oGV/yKgWxTu+WvF+W5U3ZrKVEkCzxk116QQz58TP6wEisSFzhWehZQERBqwcd3TV0CjdSxk4s/+cAdsndb88woBzf+cIl/lNq41BWBk="
+before_install:
+      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 install: 
 -  pip install tox-travis
 script: make test
@@ -36,3 +42,12 @@ deploy:
   on:
     repo: intelsdi-x/snap-plugin-collector-pysmart
     tags: true    
+addons:
+  coverity_scan:
+    project:
+      name: "intelsdi-x/snap-plugin-collector-pysmart"
+      description: "Build submitted via Travis CI"
+    notification_email: daniel.nguyen@intel.com
+    build_command_prepend: ""
+    build_command:   ""
+    branch_pattern: coverity_scan
