@@ -5,6 +5,7 @@ It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
 
 1. [Getting Started](#getting-started)
   * [System Requirements](#system-requirements)
+  * [Operating systems](#operating-systems)
   * [Installation](#installation)
   * [Configuration and Usage](#configuration-and-usage)
 2. [Documentation](#documentation)
@@ -14,7 +15,6 @@ It's used in the [Snap framework](http://github.com/intelsdi-x/snap).
 3. [Community Support](#community-support)
 4. [Contributing](#contributing)
 5. [License](#license)
-6. [Acknowledgements](#acknowledgements)
 
 ## Getting Started
 ### System Requirements 
@@ -36,7 +36,6 @@ For testing:
 The plugin should work on any platform with Python2.7 and where smartclt is installed.  The plugin has been tested on Linux and MacOS.
 
 ### Installation
-
 #### Python module
 
 The preferred way to run Python based plugins is to leverage the python package
@@ -87,7 +86,20 @@ Since the current default timeout may be exceeded start `snapteld` with the flag
 Lastly, when you load the plugin you will also want to increase the clients
 timeout using the flag `--timeout 30s` (e.g. `snaptel --timeout 30s plugin load snap-plugin-collector-pysmart`).
 
-### SMART Metrics
+### Configuration and Usage
+* Start snapteld
+  * See the Snap [readme](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started) for getting started details
+  * Start snap: `snapteld -t 0 -l 1`
+* Ensure that smartctl is **installed** and **enabled**
+  * To install smartctl run:
+     * On MacOS `brew install smartmontools`
+     * On Ubuntu `apt-get install smartmontools`
+     * On RedHat/CentOS `yum install smartmontools`
+  * To ensure SMART is enabled run:
+    * `smartctl --scan`
+
+## Documentation
+### Collected Metrics
 This plugin will identify all the devices on the node which have [S.M.A.R.T.](https://www.smartmontools.org/) enabled and automatically populate the list of collected metrics based on which are being exposed by the device. This will be different per manufacturer and per device.
 
 Below is an example of the metrics being gathered by the Intel 3700 SSD
@@ -111,19 +123,6 @@ Namespace | Data Type | Description (optional)
 /intel/smartmon/devices/$deviceName/Host_Writes_32mb_Total_LBAs_Written | string | reports the total number of sectors written by the host system
 /intel/smartmon/devices/$deviceName/Host_Reads_32mb_Total_LBAs_Read | string | reports the total number of sectors read by the host system
 /intel/smartmon/devices/$deviceName/NAND_Writes_32mb | string | reports the total number of sectors writen by the host system
-
-### Configuration and Usage
-* Start snapteld 
-  * See the Snap [readme](https://github.com/intelsdi-x/snap/blob/master/README.md#getting-started) for getting started details
-  * Start snap: `snapteld -t 0 -l 1`
-* Ensure that smartctl is **installed** and **enabled**
-  * To install smartctl run:
-     * On MacOS `brew install smartmontools`
-     * On Ubuntu `apt-get install smartmontools`
-     * On RedHat/CentOS `yum install smartmontools`
-  * To ensure SMART is enabled run:
-    * `smartctl --scan`
-
 
 ### Examples
 In this example we will collect data from SMART and publish it to a file. It is assumed that you are using the latest Snap binary and plugins.
