@@ -93,24 +93,24 @@ This plugin will identify all the devices on the node which have [S.M.A.R.T.](ht
 Below is an example of the metrics being gathered by the Intel 3700 SSD
 * Note: $deviceName will be dependent on the path (i.e. /dev/sda1)
 
-Namespace | Description (optional)
-----------|-----------------------
-/intel/smartmon/devices/$deviceName/Reserve_Block_Count | available reserved space raw value 
-/intel/smartmon/devices/$deviceName/Program_Fail_Count | shows total count of program fails
-/intel/smartmon/devices/$deviceName/Unexpected_Power_Loss_Count | reports number of unclean shutdowns, cumulative over the life of the ssd
-/intel/smartmon/devices/$deviceName/Power_Loss_Cap_Test | last test result as microseconds to discharge cap
-/intel/smartmon/devices/$deviceName/SATA_Downshift_Count | reports number of times SATA interface selected lower signaling rate due to error
-/intel/smartmon/devices/$deviceName/Temperature_Case | reports SSD case temperature statistics
-/intel/smartmon/devices/$deviceName/Unsafe_Shutdown_Count | reports the cumulative number of unsafe (unclean) shutdown events over the life of the device
-/intel/smartmon/devices/$deviceName/Temperature_Internal | reports internal temperature of the SSD in degrees Celsius
-/intel/smartmon/devices/$deviceName/CRC_Error_Count | shows total number of encountered SATA interface cyclic redundancy check (CRC) errors
-/intel/smartmon/devices/$deviceName/Host_Writes_32mb | reports total number of sectors written by the host system
-/intel/smartmon/devices/$deviceName/Timed_Workload_Host_ReadWrite_Ratio | shows the percentage of I/O operations that are read operations 
-/intel/smartmon/devices/$deviceName/Timed_Workload_Timer | measures the elapsed time, number of minutes since starting this workload timer 
-/intel/smartmon/devices/$deviceName/Thermal_Throttle | reports Percent Throttle Status and Count of events 
-/intel/smartmon/devices/$deviceName/Host_Writes_32mb_Total_LBAs_Written | reports the total number of sectors written by the host system
-/intel/smartmon/devices/$deviceName/Host_Reads_32mb_Total_LBAs_Read | reports the total number of sectors read by the host system
-/intel/smartmon/devices/$deviceName/NAND_Writes_32mb | reports the total number of sectors writen by the host system
+Namespace | Data Type | Description (optional)
+----------|-----------|-----------------------
+/intel/smartmon/devices/$deviceName/Reserve_Block_Count | string | available reserved space raw value
+/intel/smartmon/devices/$deviceName/Program_Fail_Count | string | shows total count of program fails
+/intel/smartmon/devices/$deviceName/Unexpected_Power_Loss_Count | string | reports number of unclean shutdowns, cumulative over the life of the ssd
+/intel/smartmon/devices/$deviceName/Power_Loss_Cap_Test | string | last test result as microseconds to discharge cap
+/intel/smartmon/devices/$deviceName/SATA_Downshift_Count | string | reports number of times SATA interface selected lower signaling rate due to error
+/intel/smartmon/devices/$deviceName/Temperature_Case | string | reports SSD case temperature statistics
+/intel/smartmon/devices/$deviceName/Unsafe_Shutdown_Count | string | reports the cumulative number of unsafe (unclean) shutdown events over the life of the device
+/intel/smartmon/devices/$deviceName/Temperature_Internal | string | reports internal temperature of the SSD in degrees Celsius
+/intel/smartmon/devices/$deviceName/CRC_Error_Count | string | shows total number of encountered SATA interface cyclic redundancy check (CRC) errors
+/intel/smartmon/devices/$deviceName/Host_Writes_32mb | string | reports total number of sectors written by the host system
+/intel/smartmon/devices/$deviceName/Timed_Workload_Host_ReadWrite_Ratio | string | shows the percentage of I/O operations that are read operations
+/intel/smartmon/devices/$deviceName/Timed_Workload_Timer | string | measures the elapsed time, number of minutes since starting this workload timer
+/intel/smartmon/devices/$deviceName/Thermal_Throttle | string | reports Percent Throttle Status and Count of events
+/intel/smartmon/devices/$deviceName/Host_Writes_32mb_Total_LBAs_Written | string | reports the total number of sectors written by the host system
+/intel/smartmon/devices/$deviceName/Host_Reads_32mb_Total_LBAs_Read | string | reports the total number of sectors read by the host system
+/intel/smartmon/devices/$deviceName/NAND_Writes_32mb | string | reports the total number of sectors writen by the host system
 
 ### Configuration and Usage
 * Start snapteld 
